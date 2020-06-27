@@ -7,9 +7,28 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© {year}</copyright>
+    <lastBuildDate>Thu, 13 Jun 2019 10:00:30 +0100</lastBuildDate>
     
 	<atom:link href="https://example.org/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>cpp</title>
+      <link>https://example.org/categories/cpp/</link>
+      <pubDate>Thu, 13 Jun 2019 10:00:30 +0100</pubDate>
+      
+      <guid>https://example.org/categories/cpp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jekyll github github-pages update</title>
+      <link>https://example.org/categories/jekyll-github-github-pages-update/</link>
+      <pubDate>Fri, 31 May 2019 10:04:02 +0100</pubDate>
+      
+      <guid>https://example.org/categories/jekyll-github-github-pages-update/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>

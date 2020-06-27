@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jekyll github github-pages update on </title>
+    <link>https://example.org/categories/jekyll-github-github-pages-update/</link>
+    <description>Recent content in jekyll github github-pages update on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>© {year}</copyright>
+    <lastBuildDate>Fri, 31 May 2019 10:04:02 +0100</lastBuildDate>
+    
+	<atom:link href="https://example.org/categories/jekyll-github-github-pages-update/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Welcome to GitHub pages and Jekyll</title>
+      <link>https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/</link>
+      <pubDate>Fri, 31 May 2019 10:04:02 +0100</pubDate>
+      
+      <guid>https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/</guid>
+      <description>Intro Did you know that you can host a website directly from your github account?
+Simply create a repository called &amp;lt;your-username&amp;gt;.github.io and commit html files to master or gh-pages branches.
+You can then access your site from: https://&amp;lt;username&amp;gt;/github.io :sunglasses:
+See github-pages for more information.
+Jekyll Jekyll is a static website generator. Basically it&amp;rsquo;ll turn markdown into html which is useful for creating content quickly and easily. But you can also combine this with custom html and css to actually make your site look half-decent.</description>
+    </item>
+    
+  </channel>
+</rss>

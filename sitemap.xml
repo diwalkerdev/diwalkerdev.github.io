@@ -4,10 +4,52 @@
   
   <url>
     <loc>https://example.org/</loc>
+    <lastmod>2019-06-13T10:00:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/2019-06-13-include-directories/</loc>
+    <lastmod>2019-06-13T10:00:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/</loc>
+    <lastmod>2019-06-13T10:00:30+01:00</lastmod>
   </url>
   
   <url>
     <loc>https://example.org/categories/</loc>
+    <lastmod>2019-06-13T10:00:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/categories/cpp/</loc>
+    <lastmod>2019-06-13T10:00:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/2019-06-07-header_files/</loc>
+    <lastmod>2019-06-07T14:30:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/2019-06-04-building-cpp-basics/</loc>
+    <lastmod>2019-06-04T15:39:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/2019-06-03-building-cpp-intro/</loc>
+    <lastmod>2019-06-03T16:31:30+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/categories/jekyll-github-github-pages-update/</loc>
+    <lastmod>2019-05-31T10:04:02+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/</loc>
+    <lastmod>2019-05-31T10:04:02+01:00</lastmod>
   </url>
   
   <url>

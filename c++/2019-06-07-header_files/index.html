@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Building C&#43;&#43; (Part 3) - Header files | </title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Building C&#43;&#43; (Part 3) - Header files" />
+  <meta name="twitter:description" content=""
+  />
+  <meta name="twitter:site" content="@https://twitter.com/&lt;your handle&gt;" />
+  <meta name="twitter:creator" content="@https://twitter.com/&lt;your handle&gt;" />
+  
+
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="/css/post.min.31652690bd6cbaa0af67ba7d9b0c23f1f6252cff82cb9782e80493d12bf7662c.css" integrity="sha256-MWUmkL1suqCvZ7p9mwwj8fYlLP&#43;Cy5eC6AST0Sv3Ziw="/>
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    { 
+      "@context": "http://schema.org", 
+      "@type": "WebSite", 
+      "url": "https:\/\/example.org\/c\u002b\u002b\/2019-06-07-header_files\/",
+      "name": "Building C\u002b\u002b (Part 3) - Header files",
+      "author": {
+        "@type": "Person",
+        "name": ""
+      },
+      "description": ""
+    }
+  
+  </script>
+</head>
+
+<body>
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+
+  <nav class="nav" role="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  href="/blog">blog</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/c&#43;&#43;">C&#43;&#43;</a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  <main>
+    
+    
+
+    <div class="post">
+      <header class="post__header">
+        <h1 class="post__title">Building C&#43;&#43; (Part 3) - Header files</h1>
+        <time datetime="2019-06-07 14:30:30 &#43;0100 BST" class="post__date"
+        >Jun 7 2019</time>
+      </header>
+      <article class="post__content">
+          
+<h1 id="building-c-part-3---header-files">Building C++ (part 3) - Header files</h1>
+<p>Last time we split the build process into a compile and link step. This is important when using libraries, but before we can address libraries we need to look at header files and include paths.</p>
+<h2 id="preprocessing">Preprocessing<a class="anchor" href="#preprocessing">#</a></h2>
+<p>I also mentioned that there are more steps than compiling and linking. The first step that actually happens is <strong>preprocessing</strong>. The preprocessor changes the source code based on instructions within the source code and symbols passed to the compiler. Now there are many things the preprocessor can do, but for now I would like to focus on it&rsquo;s ability to copy and paste files.</p>
+<h2 id="include-directive">Include directive<a class="anchor" href="#include-directive">#</a></h2>
+<p>Near the top of most <code>.cpp</code> files you will see:</p>
+<pre><code class="language-cpp">#include &lt; ... &gt;
+// or
+#include &quot; ... &quot;
+</code></pre>
+<p>Regardless of the syntax, chevrons or quotes, the include directive informs the preprocessor to copy the contents of the file into the location of the <code>#include</code>.</p>
+<p>So why the two syntaxes?</p>
+<ul>
+<li><code>&lt; &gt;</code> informs the preprocessor to only look in <em>standard system directories</em>. I.e. directories the compiler was informed about when itself was built, such as the standard library header files. This is why you can include things like <code>stdio.h</code> or <code>iostream</code> without giving the compiler any more information.</li>
+<li><code>&quot; &quot;</code> informs the preprocessor to search first from the same directory as the file containing the directive and then from a list of <strong>include directories</strong>. Quotes are mostly used to include programmer  defined header files.</li>
+</ul>
+<h2 id="calculatorh">Calculator.h<a class="anchor" href="#calculatorh">#</a></h2>
+<p>Create <code>calculator.h</code> and save it to the <code>src</code> directory.</p>
+<pre><code class="language-cpp">// ---
+// calculator.h
+// ---
+
+int add(int a, int b) 
+{
+	return a + b;
+}
+</code></pre>
+<p>And change <code>main.cpp</code> to try and add two numbers:</p>
+<pre><code class="language-cpp">// ---
+// main.cpp
+// ---
+
+#include &lt;stdio.h&gt;
+// #include &quot;calculator.h&quot;
+
+int main() 
+{
+	int x = add(3, 2);
+	printf(&quot;Result: %d\n&quot;, x);
+	return 0;
+}
+</code></pre>
+<p>If you were to build the program with <code>#include &quot;calculator.h&quot;</code> commented you would get a compiler error.</p>
+<pre><code>error: use of undeclared identifier 'add'.
+</code></pre>
+<p>Because obviously, the compiler has no idea what <code>add()</code> is. Uncomment the calculator include and ensure the program compiles correctly. It should compile, as <code>main.cpp</code> now has the definition of <code>add()</code> copied into it!</p>
+<p>Next create a file called <code>empty.cpp</code> and save it to the <code>src</code> directory. Remember to add<code>empty.cpp</code> to the build by adding it to <code>.files</code>:</p>
+<pre><code>../../src/empty.cpp
+../../src/main.cpp
+</code></pre>
+<p>And then simply include <code>calculator.h</code> inside <code>empty.cpp</code>.</p>
+<pre><code>// ---
+// empty.cpp
+// ---
+#include &quot;calculator.h&quot;
+</code></pre>
+<p>Try and build the project and you&rsquo;ll get a nasty looking <code>multiply defined symbols</code> linker error (this has been modified slightly for clarity):</p>
+<pre><code>error LNK2005: &quot;int __cdecl add(int,int)&quot; (?add@@YAHHH@Z) already defined in empty.o
+
+program.exe : fatal error LNK1169: one or more multiply defined symbols found'
+
+clang++.exe: error: linker command failed with exit code 1169 (use -v to see invocation)
+
+Linking Failed!
+</code></pre>
+<p>What the heck is going on?!?</p>
+<p>This is where things start to get tricky. The first thing to appreciate is that this is a <strong>linker</strong> error, <code>main.cpp</code> and <code>empy.cpp</code> <strong>compiled</strong>. The problem is that each file copied the <strong>definition</strong> of <code>add()</code>. The linker then sees two definitions of the same function which it doesn&rsquo;t like and throws the error.</p>
+<h2 id="declaration-vs-definition">Declaration vs definition<a class="anchor" href="#declaration-vs-definition">#</a></h2>
+<p>As I mentioned, the problem is that each file include <code>calculator.h</code> which copies the <strong>definition</strong> of <code>add()</code>.  This is fine until we get to the linking stage, where the linker expects each function to be defined only once.</p>
+<p>Let&rsquo;s do something a bit strange and change <code>add()</code> to a <strong>declaration</strong> only. A declaration is like a promise. It tells the compiler, that <em>somewhere</em>, there exists a function called <code>add</code> that takes two <code>ints</code> and returns and <code>int</code>. With a declaration, the compiler will be happy, but the linker will not.</p>
+<pre><code class="language-cpp">// ---
+// calculator.h
+// ---
+
+int add(int, int);
+</code></pre>
+<p>And build the project:</p>
+<pre><code>error LNK2019: unresolved external symbol &quot;int __cdecl add(int,int)&quot; (?add@@YAHHH@Z) referenced in function main
+
+program.exe : fatal error LNK1120: 1 unresolved externals'
+
+clang++.exe: error: linker command failed with exit code 1120 (use -v to see invocation)
+
+Linking Failed!
+</code></pre>
+<p>Again, <code>main.cpp</code> and <code>empty.cpp</code> compiled, because <code>calculator.h</code> contained the declaration. But the linking failed because now the definition of <code>add()</code> does not exist. Hence the <code>unresolved externals</code> error.</p>
+<p>Hopefully you can see that it is the job of the linker to piece together the functions defined in other <strong>compilation units</strong>.</p>
+<h2 id="calculatorcpp">Calculator.cpp<a class="anchor" href="#calculatorcpp">#</a></h2>
+<p>Create <code>calculator.cpp</code>, save it to the <code>src</code> directory, and add it to <code>.files</code>.</p>
+<p>The contents of <code>calculator.cpp</code> should be:</p>
+<pre><code class="language-cpp">int mul(int a, int b)
+{
+    return a * b;
+}
+</code></pre>
+<p>Build the project and everything should be fine again.</p>
+<p>So in summary we have:</p>
+<ul>
+<li><code>main.cpp</code> and <code>empty.cpp</code> that include <code>calculator.h</code> .</li>
+<li><code>calculator.h</code> contains the <strong>declaration</strong> of <code>add()</code>.</li>
+<li><code>calculator.cpp</code> contains the one and only one <strong>definition</strong> of the <code>add()</code> function.</li>
+</ul>
+<h2 id="include-guards">Include guards<a class="anchor" href="#include-guards">#</a></h2>
+<p>So we&rsquo;re good? Everything is fine in the world, right?</p>
+<p>Well, not quite.</p>
+<p>Let&rsquo;s extend <code>calculator.h</code> to include a definition of an <code>Integer</code> structure:</p>
+<pre><code class="language-cpp">// ---
+// calculator.h
+// ---
+
+int mul(int a, int b);
+
+struct Integer {
+    int val;
+    int min;
+    int max;
+};
+</code></pre>
+<p>And change <code>empty.cpp</code> to include <code>calculator.h</code> twice.</p>
+<pre><code class="language-cpp">// ---
+// empty.cpp
+// ---
+
+#include &quot;calculator.h&quot;
+#include &quot;calculator.h&quot;
+</code></pre>
+<p>Now you may think this is pointless, that any error could be fixed by eliminating the second include, but this happens all the time - just not so explicitly. You could easily include two header files, <code>a.h</code> and <code>b.h</code> that both include <code>c.h</code> and there you go - the same header included twice.</p>
+<p>Building the project again will now give you an error:</p>
+<pre><code>'In file included from ../../src/empty.cpp:2:
+../../src/calculator.h:6:8: error: redefinition of \'Integer\'\r\nstruct Integer {
+../../src/empty.cpp:1:10: note: \'../../src/calculator.h\' included multiple times, additional include site here
+#include &quot;calculator.h&quot;
+
+../../src/empty.cpp:2:10: note: \'../../src/calculator.h\' included multiple times, additional include site here\r\n#include &quot;calculator.h&quot;         
+
+../../src/calculator.h:6:8: note: unguarded header; consider using #ifdef guards or #pragma once
+struct Integer {
+
+1 error generated.
+
+Compilation Failed!
+</code></pre>
+<p>Clang has actually done a pretty good job of identifying the error and has even given a hint to how to fix the problem:  <code>consider using #ifdef guards or #pragma once</code>.</p>
+<p>Include guards look like:</p>
+<pre><code>#ifndef CALCULATOR_H
+#define CALCULATOR_H
+
+// Contents of the header file.
+
+#endif // CALCULATOR_H
+</code></pre>
+<p>This reads as:</p>
+<ul>
+<li>If there&rsquo;s not a symbol defined called <code>CALCULATOR_H</code>.</li>
+<li>Then define a symbol called <code>CALCULATOR_H</code>.</li>
+<li>And then include the contents.</li>
+</ul>
+<p>When the header is included multiple times, <code>CALCULATOR_H</code> will already be defined, so the <code>#ifndef</code> statement will evaluate as false and the contents won&rsquo;t be included again.</p>
+<p>Add the include guards to <code>calculator.h</code> and build the project. Everything should work again.</p>
+<pre><code class="language-cpp">#ifndef CALCULATOR_H
+#define CALCULATOR_H
+
+int mul(int a, int b);
+
+struct Integer {
+    int val;
+    int min;
+    int max;
+};
+
+#endif // CALCULATOR_H
+</code></pre>
+<p>Alternatively, you can replace the include guards with one line: <code>#pragma once</code>. So why would you still use include guards? Because (according to Wikipedia) <code>#pragma once</code> is non-standard. However most modern compilers support it, so unless you need to support very old compilers, then it is probably safe to use.</p>
+<h2 id="summary">Summary<a class="anchor" href="#summary">#</a></h2>
+<p>We&rsquo;ve covered a lot.</p>
+<ul>
+<li>Includes are performed by the preprocessor.</li>
+<li>The preprocessor can look for files in standard system directories or relative to the include directive.</li>
+<li>The compiler needs declarations.</li>
+<li>The linker needs definitions.</li>
+<li>Header files should typically contain function declarations or data definitions.</li>
+<li>Regular function definitions (i.e. non-templated) should almost always be placed in <code>.cpp</code> files.</li>
+<li>To prevent multiple declarations in a single compilation unit, the contents of the header file should be wrapped in include guards.</li>
+</ul>
+
+
+          
+      </article>
+        
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-04-building-cpp-basics/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">Building C&#43;&#43; (Part 2) - Basics</span>
+    </a>
+  
+
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-13-include-directories/">
+      <span class="pagination__label">Next Post</span>
+      <span class="pagination__title" >Building C&#43;&#43; (Part 4) - Include directories</a>
+    </a>
+  
+</div>
+
+    </div>
+
+    
+    
+
+  </main>
+
+  
+  <footer>
+      
+
+
+<div class="social-icons">
+  
+     
+    
+      <a class="social-icons__icon" title="Twitter"
+         style="background-image: url(/images/social/twitter.svg)" 
+         href="https://twitter.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__icon" title="GitHub"
+         style="background-image: url(/images/social/github.svg)" 
+         href="https://github.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+     
+</div>
+
+    <p>© 2020</p>
+  </footer>
+
+
+  
+  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+</body>
+
+</html>

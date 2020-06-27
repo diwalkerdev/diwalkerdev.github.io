@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Building C&#43;&#43; (Part 4) - Include directories | </title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Building C&#43;&#43; (Part 4) - Include directories" />
+  <meta name="twitter:description" content=""
+  />
+  <meta name="twitter:site" content="@https://twitter.com/&lt;your handle&gt;" />
+  <meta name="twitter:creator" content="@https://twitter.com/&lt;your handle&gt;" />
+  
+
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="/css/post.min.31652690bd6cbaa0af67ba7d9b0c23f1f6252cff82cb9782e80493d12bf7662c.css" integrity="sha256-MWUmkL1suqCvZ7p9mwwj8fYlLP&#43;Cy5eC6AST0Sv3Ziw="/>
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    { 
+      "@context": "http://schema.org", 
+      "@type": "WebSite", 
+      "url": "https:\/\/example.org\/c\u002b\u002b\/2019-06-13-include-directories\/",
+      "name": "Building C\u002b\u002b (Part 4) - Include directories",
+      "author": {
+        "@type": "Person",
+        "name": ""
+      },
+      "description": ""
+    }
+  
+  </script>
+</head>
+
+<body>
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+
+  <nav class="nav" role="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  href="/blog">blog</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/c&#43;&#43;">C&#43;&#43;</a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  <main>
+    
+    
+
+    <div class="post">
+      <header class="post__header">
+        <h1 class="post__title">Building C&#43;&#43; (Part 4) - Include directories</h1>
+        <time datetime="2019-06-13 10:00:30 &#43;0100 BST" class="post__date"
+        >Jun 13 2019</time>
+      </header>
+      <article class="post__content">
+          
+<h1 id="building-c-part-4---include-directories">Building C++ (part 4) - include directories</h1>
+<p>Last time we covered include files and some common errors associated with them. I now want to cover include directories, which is the final piece of information needed before we can cover the topic of libraries.</p>
+<p>First some house keeping, create an <code>include</code> directory and then move <code>calculator.h</code> into it. Also add a new build file: <code>.includes</code>.</p>
+<pre><code>├───build
+│   └───pc-clang
+│           .cxxflags
+│           .files
+|           .includes
+│           build.py
+└───src
+|   └───main.cpp
+└───include
+    └───calculator.h
+</code></pre>
+<h2 id="public-and-private-headers">Public and Private Headers<a class="anchor" href="#public-and-private-headers">#</a></h2>
+<p>Why would we want to do this? Image some time in the future when the project is complete and we would like to make it so others can use our code. We need to provide <strong>some</strong> header files to the user, so they can access the function declarations and struct definitions. However some of the header files we may want to keep private, for two reasons:</p>
+<ul>
+<li>Clarity - some functions and structs are implementation details and the user does not need to know about them.</li>
+<li>Intellectual property - sometimes you need to include implementation details in header files and therefore you do not wish to share them.</li>
+</ul>
+<p>To achieve this separation of public and private header files, public headers go inside the <code>include</code> directory and private headers go <em>elsewhere</em>; it doesn&rsquo;t really matter, wherever that is easily distinguishable.</p>
+<p>By adding the <code>include</code> directory we make it clear to perspective users of our code which directory should be included.</p>
+<h2 id="distributing-code">Distributing code<a class="anchor" href="#distributing-code">#</a></h2>
+<p>To expand slightly on the previous point of protecting IP; obviously, if someone has access to your source code then there is nothing you can do. Therefore if you need to share a closed source library then you will need to add a <strong>distribution</strong> stage to your build process.</p>
+<p>Once the project has built, <strong>distribution</strong> will then extract the artefacts that you want to share. This will be the final binary output as a static or shared library and the public headers. Putting only public headers in the <code>include</code> directory simplifies the distribution step - as you don&rsquo;t have to do anything to work out which headers are private and which are public.</p>
+<h2 id="missing-includes">Missing Includes<a class="anchor" href="#missing-includes">#</a></h2>
+<p>If you were to now build the project you would get the following error:</p>
+<pre><code>fatal error: \'calculator.h\' file not found
+#include &quot;calculator.h&quot;
+^~~~~~~~~~~~~~1 error generated.
+
+Application Compilation Failed!
+</code></pre>
+<p>This should make sense. We&rsquo;ve moved the location of the file and we&rsquo;ve not given the compiler any new information to where to find the header. Remember from last time that, by default, the compiler will only search the directory where it encounters the include directive or from a set of standard system directories. Let&rsquo;s fix that now.</p>
+<h2 id="include-directories">Include directories<a class="anchor" href="#include-directories">#</a></h2>
+<p>Remember that headers files typically provide declarations and it&rsquo;s <strong>compilation</strong>, not <strong>linking</strong> that needs them. We inform the compiler of addition directories to search in by specify the path prefixed with <code>-I</code>. For example:</p>
+<pre><code>clang++ -c std=c++17 -I../../includes main.cpp
+</code></pre>
+<p>So let&rsquo;s update our build script and <code>.includes</code> to do this:</p>
+<p>Add the relative path to the <code>include</code> directory to the <code>.includes</code> file remembering that each entry should be on a separate line.</p>
+<pre><code>../../includes
+</code></pre>
+<p>Update the build script to open up the file, split the file by lines, and then prefix <code>-I</code> to each entry.</p>
+<pre><code>// ---
+// build.py
+// ---
+
+def build():
+    ...
+
+    fd = open(&quot;.includes&quot;, &quot;r&quot;)
+    includes = [&quot;-I&quot; + x for x in fd.read().splitlines()]
+    
+    ...
+</code></pre>
+<p>Finally update the compilation function to use the include directories provided by <code>.includes</code>:</p>
+<pre><code>// ---
+// build.py
+// ---
+
+def compilation(msg, cxxflags, includes, files):
+    result = subprocess.run([&quot;clang++&quot;, &quot;-c&quot;] + cxxflags + includes + files, capture_output=True)
+    print(result)
+    if result.returncode != 0:
+        print(msg + &quot;Compilation Failed!&quot;)
+        exit(1)
+</code></pre>
+<p>And remember to pass the <code>includes</code> variable to the <code>compilation</code> function.</p>
+<p>Building should now work again.</p>
+<h2 id="including-files-in-sub-directories">Including files in sub-directories<a class="anchor" href="#including-files-in-sub-directories">#</a></h2>
+<p>It is worth noting that we didn&rsquo;t change at all the include directive for <code>calculator.h</code>.  Therefore when you specify an include, the compiler will search for the file relative to the list of include directories.</p>
+<p>Now consider what you need to do, if you need to include a header in a subdirectory of the <code>includes</code> directory. For example <code>include/submodule/important.h</code>.</p>
+<p>You have two options:</p>
+<ol>
+<li>Add the <code>submodule</code> path to the <code>.includes</code> file and include by writing <code>#include &quot;important.h&quot;</code>.</li>
+<li>Do not add the <code>submodule</code> path and include by writing <code>#include &quot;submodule/module.h&quot;</code>.</li>
+</ol>
+<p>The latter can be nice to make it more explicit to which component the include belongs to. Adding too many include paths can ruin the organisational hierarchy of your project.</p>
+<h2 id="summary">Summary<a class="anchor" href="#summary">#</a></h2>
+<ul>
+<li>We created an <code>include</code> directory to contain all public headers.</li>
+<li>We then added the <code>include</code> directory path to our build process by adding the include switch <code>-I</code> switch to the compilation step.</li>
+<li>Discussed that you can reference headers in subdirectories by specifying the path in the include directive.</li>
+</ul>
+
+
+          
+      </article>
+        
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-07-header_files/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">Building C&#43;&#43; (Part 3) - Header files</span>
+    </a>
+  
+
+  
+</div>
+
+    </div>
+
+    
+    
+
+  </main>
+
+  
+  <footer>
+      
+
+
+<div class="social-icons">
+  
+     
+    
+      <a class="social-icons__icon" title="Twitter"
+         style="background-image: url(/images/social/twitter.svg)" 
+         href="https://twitter.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__icon" title="GitHub"
+         style="background-image: url(/images/social/github.svg)" 
+         href="https://github.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+     
+</div>
+
+    <p>© 2020</p>
+  </footer>
+
+
+  
+  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+</body>
+
+</html>

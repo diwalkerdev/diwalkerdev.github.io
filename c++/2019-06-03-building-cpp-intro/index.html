@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Building C&#43;&#43; (Part 1) - Introduction | </title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Building C&#43;&#43; (Part 1) - Introduction" />
+  <meta name="twitter:description" content=""
+  />
+  <meta name="twitter:site" content="@https://twitter.com/&lt;your handle&gt;" />
+  <meta name="twitter:creator" content="@https://twitter.com/&lt;your handle&gt;" />
+  
+
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="/css/post.min.31652690bd6cbaa0af67ba7d9b0c23f1f6252cff82cb9782e80493d12bf7662c.css" integrity="sha256-MWUmkL1suqCvZ7p9mwwj8fYlLP&#43;Cy5eC6AST0Sv3Ziw="/>
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    { 
+      "@context": "http://schema.org", 
+      "@type": "WebSite", 
+      "url": "https:\/\/example.org\/c\u002b\u002b\/2019-06-03-building-cpp-intro\/",
+      "name": "Building C\u002b\u002b (Part 1) - Introduction",
+      "author": {
+        "@type": "Person",
+        "name": ""
+      },
+      "description": ""
+    }
+  
+  </script>
+</head>
+
+<body>
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+
+  <nav class="nav" role="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  href="/blog">blog</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/c&#43;&#43;">C&#43;&#43;</a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  <main>
+    
+    
+
+    <div class="post">
+      <header class="post__header">
+        <h1 class="post__title">Building C&#43;&#43; (Part 1) - Introduction</h1>
+        <time datetime="2019-06-03 16:31:30 &#43;0100 BST" class="post__date"
+        >Jun 3 2019</time>
+      </header>
+      <article class="post__content">
+          
+<h1 id="building-c-part-1---introduction">Building C++ (Part 1) - Introduction</h1>
+<p>In this series I would like to explain how to build C++ projects.</p>
+<p>We&rsquo;ll cover:</p>
+<ul>
+<li>The basics of building and structuring projects.</li>
+<li>The difference in building executables, static libraries and dynamic libraries.</li>
+<li>How to link against 3rd party libraries.</li>
+<li>Building for different targets.</li>
+</ul>
+<p>By the end of the series you will also develop an understanding and appreciation of what make C++ hard to build.</p>
+<p>Furthermore we&rsquo;ll be doing everything as manually as possible. No IDE and no build tools. Just a bit of scripting and the compiler.</p>
+<h2 id="problem-statement">Problem Statement<a class="anchor" href="#problem-statement">#</a></h2>
+<p>A <strong>compiler</strong> is a tool that turns source code into binaries. A <strong>binary</strong> is the version of your program that the computer understands. A <strong>linker</strong> combines binaries into an executable. <strong>Building</strong> is the combination of compilation and linking. We compile or build for a <strong>target</strong>  where a target is a combination of (but is not limited to):</p>
+<ul>
+<li>Target Architecture - x86, x64, ARM or other processor.</li>
+<li>Target Operating System - Windows, Linux, MacOS, other or none.</li>
+<li>Standard Library - You cannot mix standard libraries from different vendors.</li>
+</ul>
+<p>In addition to the above there are more variables that need to be considered in order to build a project correctly:</p>
+<ul>
+<li>Which compiler? - For example MSVC has a different interface to GCC and Clang.</li>
+<li>Which C++ standard? - Does your compiler support newer features?</li>
+<li>Platform support? - Does your platform support all the C++ features such as atomics?</li>
+<li>How is the project structured? There is no official project structure for C++.</li>
+<li>Build types? - Are you building a Debug or Release version of your project?</li>
+<li>Build - Are you trying to build an executable, static library or a dynamic library?</li>
+<li>Build tool - Is the project dependent on a specific build tool like CMake?</li>
+</ul>
+<p>So you see, it&rsquo;s one thing to compile some source code, but a very different thing to get the right combination of compiler, standard and build for your target.</p>
+<p>Don&rsquo;t worry if you don&rsquo;t understand everything now, we&rsquo;ll cover it all in more detail later.</p>
+<h2 id="getting-started">Getting Started<a class="anchor" href="#getting-started">#</a></h2>
+<p>You will need to install:</p>
+<ul>
+<li>
+<p>A scripting language - anything you are comfortable with. I&rsquo;ll use <a href="https://www.python.org/">Python</a>.</p>
+</li>
+<li>
+<p>The Clang compiler. You can install Clang <a href="https://clang.llvm.org/">here</a>.</p>
+</li>
+</ul>
+<p>A bit of history; for a long time there were two major compilers. Microsoft&rsquo;s Visual Compiler and the GNU GCC compiler. If you developed for Windows then you would use MSVC, otherwise you would use GCC. Although they both achieve the same thing, turn source files into binaries, the interface to these compilers are very different.</p>
+<p>Clang runs natively on Windows, Linux and MacOS, therefore it makes sense to use for consistency across platforms. Otherwise I&rsquo;d have to specify each step twice, once for Windows and once for everything else.</p>
+<p>Make sure you can type <code>clang++ -v</code> at your terminal and get as a response something similar to:</p>
+<pre><code>clang version 7.0.0 (tags/RELEASE_700/final)
+Target: x86_64-pc-windows-msvc
+Thread model: posix
+InstalledDir: C:\Program Files\LLVM_7-0-0\bin
+</code></pre>
+<h2 id="project-structure">Project Structure<a class="anchor" href="#project-structure">#</a></h2>
+<p>Begin by replicating the following project structure:</p>
+<pre><code>├───build
+│   └───pc-clang
+│           .cxxflags
+│           .files
+│           build.py
+└───src
+        main.cpp
+</code></pre>
+<p>Where <code>build</code>, <code>includes</code>, <code>src</code> and <code>pc-clang</code> are directories. And everything else is a file.</p>
+<h2 id="the-build-files">The Build Files<a class="anchor" href="#the-build-files">#</a></h2>
+<p>In order to build the project we need to construct a compiler command. To help us construct the compiler command we will capture important parts of our program in <code>.cxxflags</code> and <code>.files</code> (which are the &ldquo;build files&rdquo;).  <u>Each entry in <code>.cxxflags</code> and <code>.files</code> should be on a new line</u>.</p>
+<p>The compiler can do many things. We&rsquo;ll focus on building an executable from source files to begin with. This has the format of :</p>
+<pre><code>&lt;compiler&gt; &lt;flags&gt; &lt;source files&gt; -o &lt;exe name&gt;
+</code></pre>
+<p>For example:</p>
+<pre><code>clang++ -std=c++17 ../../src/main.cpp -o program.exe
+</code></pre>
+<p>Therefore the contents of each file should be:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.cxxflags</td>
+<td><code>-std=c++17</code></td>
+</tr>
+<tr>
+<td>.files</td>
+<td><code>../../src/main.cpp</code></td>
+</tr>
+<tr>
+<td>main.cpp</td>
+<td>See Below</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-c++">// main.cpp
+#include &lt;stdio.h&gt;
+int main() 
+{ 
+    printf(&quot;Hello&quot;);
+    return 0;
+} 
+</code></pre>
+<p>We will use those files now in the build script.</p>
+<h2 id="build-script">Build Script<a class="anchor" href="#build-script">#</a></h2>
+<p>Create a build script in <code>pc-clang</code> in your favorite scripting language. I will use Python 3.7 and call the script <code>build.py</code>. The script needs to do the following:</p>
+<ul>
+<li>Read <code>.cxxflags</code> and split the file by lines.</li>
+<li>Read <code>.files</code>, split the files by lines and filter for files ending with &ldquo;.cpp&rdquo;.</li>
+<li>Construct the compiler command.</li>
+<li>Run the compile command in a subprocess.</li>
+</ul>
+<p>The script looks like:</p>
+<pre><code class="language-python">import subprocess
+from pathlib import Path
+
+def clean():
+    obj_files = Path().cwd().glob(&quot;*.o&quot;)
+    exe_files = Path().cwd().glob(&quot;*.exe&quot;)
+
+    for file in obj_files: file.unlink()
+    for file in exe_files: file.unlink()
+        
+def build():
+    fd = open(&quot;.files&quot;, &quot;r&quot;)
+    src_files = [x for x in fd.read().splitlines() if x.endswith(&quot;.cpp&quot;)]
+
+    cxxflags = open(&quot;.cxxflags&quot;, &quot;r&quot;).read().splitlines()
+
+    print(cxxflags)
+    print(src_files)
+
+    result = subprocess.run([&quot;clang++&quot;] + cxxflags + src_files + [&quot;-o&quot;, &quot;program.exe&quot;], capture_output=True)
+
+    print(result)
+
+
+if __name__ == &quot;__main__&quot;:
+    clean()
+    build()
+</code></pre>
+<p>Running <code>build.py</code> from the command line should now:</p>
+<ul>
+<li>clean the directory of old artefacts.</li>
+<li>build the project and generate an executable called <code>program.exe</code>.</li>
+</ul>
+<h2 id="conclusion">Conclusion<a class="anchor" href="#conclusion">#</a></h2>
+<p>What we have achieved so far is:</p>
+<ul>
+<li>Installed clang as it can be used on Windows, Linux and MacOS.</li>
+<li>Created a project structure.</li>
+<li>Created a build structure that contains the target: <code>pc-clang</code> .</li>
+<li>Specified which files to build in <code>.files</code>.</li>
+<li>Specified the compiler flags in <code>.cxxflags</code></li>
+<li>Created <code>build.py</code> that uses <code>.cxxflags</code> and <code>.files</code> to build the project.</li>
+</ul>
+<p>This took a bit of effort, but hopefully you can see that it is now easy to add more files and change the compiler flags.</p>
+<p>Next time we will look at the compiling and linking in more detail.</p>
+
+
+          
+      </article>
+        
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">Welcome to GitHub pages and Jekyll</span>
+    </a>
+  
+
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-04-building-cpp-basics/">
+      <span class="pagination__label">Next Post</span>
+      <span class="pagination__title" >Building C&#43;&#43; (Part 2) - Basics</a>
+    </a>
+  
+</div>
+
+    </div>
+
+    
+    
+
+  </main>
+
+  
+  <footer>
+      
+
+
+<div class="social-icons">
+  
+     
+    
+      <a class="social-icons__icon" title="Twitter"
+         style="background-image: url(/images/social/twitter.svg)" 
+         href="https://twitter.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__icon" title="GitHub"
+         style="background-image: url(/images/social/github.svg)" 
+         href="https://github.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+     
+</div>
+
+    <p>© 2020</p>
+  </footer>
+
+
+  
+  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+</body>
+
+</html>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title></title>
-    <link>https://example.org/</link>
-    <description>Recent content on </description>
+    <title>cpp on </title>
+    <link>https://example.org/categories/cpp/</link>
+    <description>Recent content in cpp on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© {year}</copyright>
     <lastBuildDate>Thu, 13 Jun 2019 10:00:30 +0100</lastBuildDate>
     
-	<atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://example.org/categories/cpp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -53,19 +53,6 @@ def compilation(msg, cxxflags, files): result = subprocess.run([&amp;quot;clang+
       <description>Building C++ (Part 1) - Introduction In this series I would like to explain how to build C++ projects.
 We&amp;rsquo;ll cover:
  The basics of building and structuring projects. The difference in building executables, static libraries and dynamic libraries. How to link against 3rd party libraries. Building for different targets.  By the end of the series you will also develop an understanding and appreciation of what make C++ hard to build.</description>
-    </item>
-    
-    <item>
-      <title>Welcome to GitHub pages and Jekyll</title>
-      <link>https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/</link>
-      <pubDate>Fri, 31 May 2019 10:04:02 +0100</pubDate>
-      
-      <guid>https://example.org/c&#43;&#43;/2019-05-31-welcome-to-github-pages-and-jekyll/</guid>
-      <description>Intro Did you know that you can host a website directly from your github account?
-Simply create a repository called &amp;lt;your-username&amp;gt;.github.io and commit html files to master or gh-pages branches.
-You can then access your site from: https://&amp;lt;username&amp;gt;/github.io :sunglasses:
-See github-pages for more information.
-Jekyll Jekyll is a static website generator. Basically it&amp;rsquo;ll turn markdown into html which is useful for creating content quickly and easily. But you can also combine this with custom html and css to actually make your site look half-decent.</description>
     </item>
     
   </channel>

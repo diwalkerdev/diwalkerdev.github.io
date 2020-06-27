@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Building C&#43;&#43; (Part 2) - Basics | </title>
+
+  <meta charset="UTF-8">
+  <meta name="language" content="en">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Building C&#43;&#43; (Part 2) - Basics" />
+  <meta name="twitter:description" content=""
+  />
+  <meta name="twitter:site" content="@https://twitter.com/&lt;your handle&gt;" />
+  <meta name="twitter:creator" content="@https://twitter.com/&lt;your handle&gt;" />
+  
+
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
+
+  
+  
+    
+ 
+  
+  
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="/css/post.min.31652690bd6cbaa0af67ba7d9b0c23f1f6252cff82cb9782e80493d12bf7662c.css" integrity="sha256-MWUmkL1suqCvZ7p9mwwj8fYlLP&#43;Cy5eC6AST0Sv3Ziw="/>
+  
+    
+    <link rel="stylesheet" href="/css/custom.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css" integrity="sha256-47DEQpj8HBSa&#43;/TImW&#43;5JCeuQeRkm5NMpJWZG3hSuFU="/>
+  
+  
+   
+   
+    
+
+<script type="application/ld+json">
+  
+    { 
+      "@context": "http://schema.org", 
+      "@type": "WebSite", 
+      "url": "https:\/\/example.org\/c\u002b\u002b\/2019-06-04-building-cpp-basics\/",
+      "name": "Building C\u002b\u002b (Part 2) - Basics",
+      "author": {
+        "@type": "Person",
+        "name": ""
+      },
+      "description": ""
+    }
+  
+  </script>
+</head>
+
+<body>
+  <div class="burger__container">
+  <div class="burger" aria-controls="navigation" aria-label="Menu">
+    <div class="burger__meat burger__meat--1"></div>
+    <div class="burger__meat burger__meat--2"></div>
+    <div class="burger__meat burger__meat--3"></div>
+  </div>
+</div>
+ 
+
+  <nav class="nav" role="navigation">
+  <ul class="nav__list">
+    
+    
+      <li>
+        <a  href="/">about</a>
+      </li>
+    
+      <li>
+        <a  href="/blog">blog</a>
+      </li>
+    
+      <li>
+        <a  class="active"
+         href="/c&#43;&#43;">C&#43;&#43;</a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  <main>
+    
+    
+
+    <div class="post">
+      <header class="post__header">
+        <h1 class="post__title">Building C&#43;&#43; (Part 2) - Basics</h1>
+        <time datetime="2019-06-04 15:39:30 &#43;0100 BST" class="post__date"
+        >Jun 4 2019</time>
+      </header>
+      <article class="post__content">
+          
+<h1 id="building-c-part-2---basics">Building C++ (Part 2) - Basics</h1>
+<p>In part 1 we installed Clang, setup a simple project structure and created a build script to build our code. Now we will look into the build process in a bit more detail.</p>
+<h2 id="compiling">Compiling<a class="anchor" href="#compiling">#</a></h2>
+<p>Begin by adding a compilation function to the build script:</p>
+<pre><code class="language-python">def compilation(msg, cxxflags, files):
+    result = subprocess.run([&quot;clang++ -c&quot;] + cxxflags + files, capture_output=True)
+    print(result)
+    if result.returncode != 0:
+        print(msg + &quot;Compilation Failed!&quot;)
+        exit(1)
+</code></pre>
+<p>This constructs a different compiler command:</p>
+<p><code>clang++ -c -std=c++17 &lt;files&gt;</code></p>
+<p>Now change the build function to look like:</p>
+<pre><code class="language-python">def build():
+    fd = open(&quot;.files&quot;, &quot;r&quot;)
+    src_files = [x for x in fd.read().splitlines() if x.endswith(&quot;.cpp&quot;)]
+
+    cxxflags = open(&quot;.cxxflags&quot;, &quot;r&quot;).read().splitlines()
+
+    print(cxxflags)
+    print(src_files)
+
+    compilation(&quot;&quot;, cxx_flags, src_files)
+</code></pre>
+<p>And run the build script.</p>
+<p>If you look at the files in the directory, you will now see <code>main.o</code>.  This is a binary file. You can&rsquo;t execute it but it can be linked into an executable. Let&rsquo;s do that now.</p>
+<h2 id="linking">Linking<a class="anchor" href="#linking">#</a></h2>
+<p>Add to your build script:</p>
+<pre><code class="language-python">def linking(obj_files):
+    result = subprocess.run([&quot;clang++&quot;, &quot;-o&quot;, &quot;program.exe&quot;] + obj_files, capture_output=True)
+    print(result)
+    if result.returncode != 0:
+        print(&quot;Linking Failed!&quot;)
+        exit(3)
+
+
+def src_to_obj(files):
+    return [Path(x).stem + &quot;.o&quot; for x in files]
+</code></pre>
+<p>And add to the end of build:</p>
+<pre><code class="language-python">    ...
+    linking(src_to_obj(src_files), lib_files)
+</code></pre>
+<p>And run the build script. You should now see the object file and have an executable.</p>
+<h2 id="summary">Summary<a class="anchor" href="#summary">#</a></h2>
+<p>So what did we do here?:</p>
+<ul>
+<li>We broke the build into two phases, and compile and a <em>implicit</em> link step.
+<ul>
+<li><code>-c</code>informs Clang to compile and assemble, but do not link.</li>
+<li><code>-o</code> tells clang to output a file called <code>program.exe</code>  and the object files we specify are just inputs. Clang is smart enough to figure out that these files should just be linked into an executable; they do not need to be compiled.</li>
+</ul>
+</li>
+</ul>
+<p>Hopefully you can appreciate now that <strong>building</strong> consists of multiple stages. We only covered <strong>compiling</strong> and <strong>linking</strong> but there are actually more. Previously Clang was smart enough to compile and link from source code automatically.</p>
+<p>Breaking the build process into two parts hasn&rsquo;t given us any benefit at the moment, but knowing that executables are made by linking binaries is important when we want to use static and dynamic libraries.</p>
+<p>Try to remember the above point about linking as we won&rsquo;t cover it until after looking at <strong>header files and include directories</strong>.</p>
+
+
+          
+      </article>
+        
+
+ <div class="pagination">
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-03-building-cpp-intro/">
+        <span class="pagination__label">Previous Post</span>
+        <span class="pagination__title">Building C&#43;&#43; (Part 1) - Introduction</span>
+    </a>
+  
+
+  
+    <a class="pagination__item" href="https://example.org/c&#43;&#43;/2019-06-07-header_files/">
+      <span class="pagination__label">Next Post</span>
+      <span class="pagination__title" >Building C&#43;&#43; (Part 3) - Header files</a>
+    </a>
+  
+</div>
+
+    </div>
+
+    
+    
+
+  </main>
+
+  
+  <footer>
+      
+
+
+<div class="social-icons">
+  
+     
+    
+      <a class="social-icons__icon" title="Twitter"
+         style="background-image: url(/images/social/twitter.svg)" 
+         href="https://twitter.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+      <a class="social-icons__icon" title="GitHub"
+         style="background-image: url(/images/social/github.svg)" 
+         href="https://github.com/%3cyour%20handle%3e"
+         target="_blank" rel="noopener">
+      </a>
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+  
+     
+    
+     
+</div>
+
+    <p>© 2020</p>
+  </footer>
+
+
+  
+  <script src="/js/index.min.49e4d8a384357d9b445b87371863419937ede9fa77737522ffb633073aebfa44.js" integrity="sha256-SeTYo4Q1fZtEW4c3GGNBmTft6fp3c3Ui/7YzBzrr&#43;kQ=" crossorigin="anonymous"></script>
+  
+  
+  <script src="https://unpkg.com/prismjs@1.20.0/components/prism-core.min.js"></script>
+  <script src="https://unpkg.com/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"
+    data-autoloader-path="https://unpkg.com/prismjs@1.20.0/components/"></script>
+
+</body>
+
+</html>
