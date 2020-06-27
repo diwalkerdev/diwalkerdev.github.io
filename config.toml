@@ -64,3 +64,9 @@ themesDir = "themes"
   name = "blog"
   title = "Blog"
   url = "/blog"
+
+[[menu.main]]
+  identifier = "C++"
+  name = "C++"
+  title = "C++"
+  url = "/C++"
